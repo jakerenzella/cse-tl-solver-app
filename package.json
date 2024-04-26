@@ -11,17 +11,22 @@
 	"dependencies": {
 		"@nextui-org/accordion": "^2.0.32",
 		"@nextui-org/button": "^2.0.28",
+		"@nextui-org/card": "^2.0.28",
 		"@nextui-org/code": "^2.0.25",
 		"@nextui-org/input": "^2.1.18",
 		"@nextui-org/kbd": "^2.0.26",
 		"@nextui-org/link": "^2.0.27",
+		"@nextui-org/listbox": "^2.1.19",
 		"@nextui-org/navbar": "^2.0.28",
 		"@nextui-org/snippet": "^2.0.32",
 		"@nextui-org/switch": "^2.0.26",
 		"@nextui-org/system": "2.1.0",
+		"@nextui-org/table": "^2.0.33",
+		"@nextui-org/tabs": "^2.0.29",
 		"@nextui-org/theme": "2.2.0",
 		"@react-aria/ssr": "^3.9.2",
 		"@react-aria/visually-hidden": "^3.8.10",
+		"@react-stately/data": "^3.11.2",
 		"@types/node": "20.5.7",
 		"@types/react": "18.2.21",
 		"@types/react-dom": "18.2.7",
@@ -36,8 +41,12 @@
 		"postcss": "8.4.38",
 		"react": "18.2.0",
 		"react-dom": "18.2.0",
+		"react-papaparse": "^4.4.0",
 		"tailwind-variants": "^0.1.20",
 		"tailwindcss": "3.4.3",
 		"typescript": "5.0.4"
+	},
+	"devDependencies": {
+		"@iconify/react": "^4.1.1"
 	}
 }
