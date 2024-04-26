@@ -28,7 +28,7 @@ export const CSVUploader = () => {
     return results.slice(1).map((row, i) => {
       const obj: any = {};
       row.forEach((value: string, index: number) => {
-        obj.key = i.toString();
+        obj.key = i;
         obj[keys[index]] = value;
       });
       return obj;
@@ -76,7 +76,7 @@ export const CSVUploader = () => {
       </CSVReader>
       {/* onlyt show if there's data */}
       {!isLoading && (
-        <Table aria-label="Example table with dynamic content" className="max-w-2xl max-h-full">
+        <Table aria-label="Example table with dynamic content" className="max-w-7xl max-h-dvh">
           <TableHeader columns={cols}>
             {(column) => (
               <TableColumn key={column.key}>{column.label}</TableColumn>
