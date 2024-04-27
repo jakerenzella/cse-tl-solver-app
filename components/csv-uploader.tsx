@@ -1,6 +1,6 @@
 "use client";
 
-import { SetStateAction, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import { Button } from "@nextui-org/button";
 import {
   Table,
@@ -13,55 +13,43 @@ import {
 } from "@nextui-org/table";
 import { useCSVReader } from "react-papaparse";
 
-export const CSVUploader = () => {
+type CSVReadProps = { cols: any[]; rows: any[], rawCSV: any[] };
+
+export const CSVUploader: React.FC<{
+  csvData: CSVReadProps;
+  onLoadedCSV: (data: CSVReadProps) => void;
+}> = ({ csvData, onLoadedCSV }) => {
+
   const { CSVReader } = useCSVReader();
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [rows, setRows] = useState<any[]>([]);
-  const [cols, setCols] = useState<any[]>([]);
+  const dataArrayToObject = (rawRows: any[]) => {
+    // get the cols
+    const colKeys = rawRows[0];
+    const cols = colKeys.map((key: string, i: number) => {
+      return { key, label: key };
+    });
 
-  const dataArrayToRows = (results: any[]) => {
-    // a function which takes an array of arrays and returns an array of objects
-    // each object has keys from the first array and values from the corresponding index in the other arrays
-    // ensure there is a .key property on all objects
-    const keys = results[0];
-    return results.slice(1).map((row, i) => {
+    // get the rows
+    const rows = rawRows.slice(1).map((row, i) => {
       const obj: any = {};
       row.forEach((value: string, index: number) => {
         obj.key = i;
-        obj[keys[index]] = value;
+        obj[colKeys[index]] = value;
       });
       return obj;
     });
-  };
 
-  const dataArrayToCols = (rows: any[]) => {
-    // a function which takes an array of arrays and returns an array of objects
-    // each object has keys from the first array and values from the corresponding index in the other arrays
-    // ensure there is a .key property on all objects
-    const keys = rows;
-    return keys.map((key: string, i: number) => {
-      return { key, label: key };
-    });
+    return { cols, rows, rawCSV: rawRows};
   };
 
   return (
     <div>
       <CSVReader
         onUploadAccepted={(results: any) => {
-          console.log(dataArrayToRows(results.data));
-          console.log(dataArrayToCols(results.data[0]));
-          setRows(dataArrayToRows(results.data));
-          setCols(dataArrayToCols(results.data[0]));
-          setIsLoading(false);
+          onLoadedCSV(dataArrayToObject(results.data));
         }}
       >
-        {({
-          getRootProps,
-          acceptedFile,
-          ProgressBar,
-          getRemoveFileProps,
-        }: any) => (
+        {({ getRootProps, acceptedFile, getRemoveFileProps }: any) => (
           <>
             <div>
               <button type="button" {...getRootProps()}>
@@ -70,19 +58,21 @@ export const CSVUploader = () => {
               <div>{acceptedFile && acceptedFile.name}</div>
               <button {...getRemoveFileProps()}>Remove</button>
             </div>
-            <ProgressBar />
           </>
         )}
       </CSVReader>
-      {/* onlyt show if there's data */}
-      {!isLoading && (
-        <Table aria-label="Example table with dynamic content" className="max-w-7xl max-h-dvh">
-          <TableHeader columns={cols}>
+
+      {csvData.cols.length > 0 && csvData.rows.length > 0 && (
+        <Table
+          aria-label="Example table with dynamic content"
+          className="max-w-7xl max-h-dvh"
+        >
+          <TableHeader columns={csvData.cols}>
             {(column) => (
               <TableColumn key={column.key}>{column.label}</TableColumn>
             )}
           </TableHeader>
-          <TableBody items={rows} emptyContent={"No data found"}>
+          <TableBody items={csvData.rows} emptyContent={"No data found"}>
             {(item) => (
               <TableRow key={item.key}>
                 {(columnKey) => (

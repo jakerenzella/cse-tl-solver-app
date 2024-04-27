@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import { Button } from "@nextui-org/button";
 import {
   Table,
@@ -9,66 +9,66 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  getKeyValue
+  getKeyValue,
 } from "@nextui-org/table";
+import { useCSVReader } from "react-papaparse";
 
-export const CsvViewer = () => {
-  const rows = [
-    {
-      key: "1",
-      name: "Tony Reichert",
-      role: "CEO",
-      status: "Active",
-    },
-    {
-      key: "2",
-      name: "Zoey Lang",
-      role: "Technical Lead",
-      status: "Paused",
-    },
-    {
-      key: "3",
-      name: "Jane Fisher",
-      role: "Senior Developer",
-      status: "Active",
-    },
-    {
-      key: "4",
-      name: "William Howard",
-      role: "Community Manager",
-      status: "Vacation",
-    },
-  ];
+type CSVReadProps = { cols: any[]; rows: any[]; rawCSV: any[] };
 
-  const columns = [
-    {
-      key: "name",
-      label: "NAME",
-    },
-    {
-      key: "role",
-      label: "ROLE",
-    },
-    {
-      key: "status",
-      label: "STATUS",
-    },
-  ];
+export const CSVViewer: React.FC<{
+  csvData: CSVReadProps;
+  onLoadedCSV: (data: CSVReadProps) => void;
+}> = ({ csvData, onLoadedCSV }) => {
+  const dataArrayToObject = (rawRows: any[]) => {
+    if (rawRows?.length === 0) {
+      return;
+    }
+    // get the cols
+    const colKeys = rawRows[0];
+    const cols = colKeys.map((key: string, i: number) => {
+      return { key, label: key };
+    });
+
+    // get the rows
+    const rows = rawRows.slice(1).map((row, i) => {
+      const obj: any = {};
+      row.forEach((value: string, index: number) => {
+        obj.key = i;
+        obj[colKeys[index]] = value;
+      });
+      return obj;
+    });
+
+    return { cols, rows, rawCSV: rawRows };
+  };
+
+  if (csvData?.cols.length === 0 && csvData?.rows.length === 0) {
+    onLoadedCSV(dataArrayToObject(csvData?.rawCSV) as CSVReadProps);
+  }
 
   return (
-    <Table aria-label="Example table with dynamic content">
-      <TableHeader columns={columns}>
-        {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
-      </TableHeader>
-      <TableBody items={rows}>
-        {(item) => (
-          <TableRow key={item.key}>
-            {(columnKey) => (
-              <TableCell>{getKeyValue(item, columnKey)}</TableCell>
+    <div>
+      {csvData?.cols.length > 0 && csvData?.rows.length > 0 && (
+        <Table
+          aria-label="Example table with dynamic content"
+          className="max-w-7xl max-h-dvh"
+        >
+          <TableHeader columns={csvData.cols}>
+            {(column) => (
+              <TableColumn key={column.key}>{column.label}</TableColumn>
             )}
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+          </TableHeader>
+          <TableBody items={csvData.rows} emptyContent={"No data found"}>
+            {(item) => (
+              <TableRow key={item.key}>
+                {(columnKey) => (
+                  <TableCell>{getKeyValue(item, columnKey)}</TableCell>
+                )}
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      )}
+    </div>
   );
 };
