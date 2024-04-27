@@ -47,8 +47,8 @@ export const CSVViewer: React.FC<{
     <div>
       {csvData?.cols.length > 0 && csvData?.rows.length > 0 && (
         <Table
-          aria-label="Example table with dynamic content"
-          className="max-w-7xl max-h-dvh"
+          aria-label="CSV Viewer"
+          className=""
         >
           <TableHeader columns={csvData.cols}>
             {(column) => (

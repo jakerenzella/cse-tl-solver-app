@@ -52,7 +52,7 @@ export default function RootLayout({
                 href="https://nextui-docs-v2.vercel.app?utm_source=next-app-template"
                 title="nextui.org homepage"
               >
-                <span className="text-default-600">Jake Renzella</span>
+                <span className="text-default-600">App and website by Dr Jake Renzella, solver by Dr Abdallah Saffidine</span>
               </Link>
             </footer>
           </div>

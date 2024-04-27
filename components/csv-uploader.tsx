@@ -19,7 +19,8 @@ type CSVReadProps = { cols: any[]; rows: any[]; rawCSV: any[] };
 export const CSVUploader: React.FC<{
   csvData: CSVReadProps;
   onLoadedCSV: (data: CSVReadProps) => void;
-}> = ({ csvData, onLoadedCSV }) => {
+  heading: string;
+}> = ({ csvData, onLoadedCSV, heading }) => {
   const { CSVReader } = useCSVReader();
 
   const dataArrayToObject = (rawRows: any[]) => {
@@ -61,10 +62,13 @@ export const CSVUploader: React.FC<{
           onLoadedCSV(dataArrayToObject(results.data));
         }}
       >
-        {({ getRootProps, acceptedFile, getRemoveFileProps }: any) => (
+        {({ getRootProps, acceptedFile }: any) => (
           <>
             {}
             <div className="flex space-x-1 my-4 items-center">
+              <h1 className="text-large">{heading}</h1>
+              <span className="flex-grow"></span>
+              <p className="text-small pr-2">{acceptedFile && acceptedFile.name}</p>
               <button
                 hidden={true}
                 onClick={onHiddenButtonClick}
@@ -78,7 +82,6 @@ export const CSVUploader: React.FC<{
               >
                 Browse file
               </Button>
-              <div>{acceptedFile && acceptedFile.name}</div>
             </div>
           </>
         )}
