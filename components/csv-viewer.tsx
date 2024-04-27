@@ -1,7 +1,5 @@
 "use client";
 
-import { SetStateAction, useEffect, useState } from "react";
-import { Button } from "@nextui-org/button";
 import {
   Table,
   TableHeader,
@@ -11,7 +9,6 @@ import {
   TableCell,
   getKeyValue,
 } from "@nextui-org/table";
-import { useCSVReader } from "react-papaparse";
 
 type CSVReadProps = { cols: any[]; rows: any[]; rawCSV: any[] };
 

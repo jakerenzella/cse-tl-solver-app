@@ -43,16 +43,7 @@ export const Solver = () => {
   };
   const handleAllocationStateChange = (newState: any) => {
     setAllocationState(newState);
-  }
-
-  // useEffect(() => {
-  //   const fetchAllocation = async () => {
-  //     const response = await fetch("http://127.0.0.1:5000/allocate");
-  //     const data = await response.json();
-  //     console.log(data);
-  //   };
-  //   fetchAllocation();
-  // }, []);
+  };
 
   const allocateClick = async () => {
     // check do we have timetable
@@ -79,21 +70,25 @@ export const Solver = () => {
     });
     const data = await response.json();
 
-    setAllocationState({rawCSV: data, cols: [], rows: []});
-    console.log(data);
-
-    // make a get request to http://127.0.0.1:5000/allocate
-    // with timetableState and preferencesState as body
-    // and log the response
+    setAllocationState({ rawCSV: data, cols: [], rows: [] });
   };
 
   return (
-    <Tabs aria-label="Options" variant="light" size="lg">
+    <Tabs aria-label="Options" size="lg" disabledKeys={["music"]}>
       <Tab
         key="timetable"
         title={
           <div className="flex items-center space-x-2">
-            <Icon icon="ion:ban" color="error" className="text-red-500" />
+            {timetableState.cols.length > 0 && (
+              <Icon
+                icon="ion:checkmark"
+                color="success"
+                className="text-green-500"
+              />
+            )}
+            {timetableState.cols.length === 0 && (
+              <Icon icon="ion:ban" color="error" className="text-red-500" />
+            )}
             <span>Timetable</span>
           </div>
         }
@@ -111,7 +106,16 @@ export const Solver = () => {
         key="preferences"
         title={
           <div className="flex items-center space-x-2">
-            <Icon icon="ion:ban" color="error" className="text-red-500" />
+            {preferencesState.cols.length > 0 && (
+              <Icon
+                icon="ion:checkmark"
+                color="success"
+                className="text-green-500"
+              />
+            )}
+            {preferencesState.cols.length === 0 && (
+              <Icon icon="ion:ban" color="error" className="text-red-500" />
+            )}
             <span>Tutor preferences</span>
           </div>
         }
@@ -125,26 +129,43 @@ export const Solver = () => {
           </CardBody>
         </Card>
       </Tab>
+
       <Tab
+        isDisabled={
+          timetableState.cols.length === 0 || preferencesState.cols.length === 0
+        }
         key="allocation"
         title={
           <div className="flex items-center space-x-2">
-            <Icon icon="ion:ban" color="error" className="text-red-500" />
+            <Icon
+              className={
+                timetableState.cols.length !== 0 ||
+                preferencesState.cols.length !== 0
+                  ? "animate-pulse"
+                  : ""
+              }
+              animate-bounce
+              icon="material-symbols-light:rocket-launch-outline-rounded"
+            />
             <span>Allocation</span>
           </div>
         }
       >
-        <Card>
-          <CardBody>
-            <div className="flex gap-3">
-              <Button onClick={allocateClick}>Allocate</Button>
-            </div>
-            <CSVViewer
-              csvData={allocationState}
-              onLoadedCSV={handleAllocationStateChange}
-            />
-          </CardBody>
-        </Card>
+        <Button
+          color="primary"
+          startContent={
+            <Icon icon="material-symbols-light:rocket-launch-outline-rounded"></Icon>
+          }
+          onClick={allocateClick}
+        >
+          Allocate
+        </Button>
+        <div className="mt-4">
+          <CSVViewer
+            csvData={allocationState}
+            onLoadedCSV={handleAllocationStateChange}
+          />
+        </div>
       </Tab>
     </Tabs>
   );

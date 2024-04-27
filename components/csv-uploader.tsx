@@ -1,6 +1,6 @@
 "use client";
 
-import { SetStateAction, useEffect, useState } from "react";
+import { SetStateAction, useEffect, useRef, useState } from "react";
 import { Button } from "@nextui-org/button";
 import {
   Table,
@@ -12,14 +12,14 @@ import {
   getKeyValue,
 } from "@nextui-org/table";
 import { useCSVReader } from "react-papaparse";
+import { Icon } from "@iconify/react";
 
-type CSVReadProps = { cols: any[]; rows: any[], rawCSV: any[] };
+type CSVReadProps = { cols: any[]; rows: any[]; rawCSV: any[] };
 
 export const CSVUploader: React.FC<{
   csvData: CSVReadProps;
   onLoadedCSV: (data: CSVReadProps) => void;
 }> = ({ csvData, onLoadedCSV }) => {
-
   const { CSVReader } = useCSVReader();
 
   const dataArrayToObject = (rawRows: any[]) => {
@@ -39,7 +39,19 @@ export const CSVUploader: React.FC<{
       return obj;
     });
 
-    return { cols, rows, rawCSV: rawRows};
+    return { cols, rows, rawCSV: rawRows };
+  };
+
+  // reactCSV can't be triggered by a NextUI Button,
+  // so I'm creating a hidden button to trigger the file upload
+  const hiddenUploadButtonRef = useRef(null);
+
+  const onHiddenButtonClick = () => {};
+
+  const handleTriggerClick = () => {
+    if (hiddenUploadButtonRef.current) {
+      hiddenUploadButtonRef.current.click();
+    }
   };
 
   return (
@@ -51,22 +63,29 @@ export const CSVUploader: React.FC<{
       >
         {({ getRootProps, acceptedFile, getRemoveFileProps }: any) => (
           <>
-            <div>
-              <button type="button" {...getRootProps()}>
+            {}
+            <div className="flex space-x-1 my-4 items-center">
+              <button
+                hidden={true}
+                onClick={onHiddenButtonClick}
+                ref={hiddenUploadButtonRef}
+                type="button"
+                {...getRootProps()}
+              ></button>
+              <Button
+                onClick={handleTriggerClick}
+                startContent={<Icon icon="tabler:upload" />}
+              >
                 Browse file
-              </button>
+              </Button>
               <div>{acceptedFile && acceptedFile.name}</div>
-              <button {...getRemoveFileProps()}>Remove</button>
             </div>
           </>
         )}
       </CSVReader>
 
       {csvData.cols.length > 0 && csvData.rows.length > 0 && (
-        <Table
-          aria-label="Example table with dynamic content"
-          className="max-w-7xl max-h-dvh"
-        >
+        <Table aria-label="CSV Viewer" className="flex-1 h-full">
           <TableHeader columns={csvData.cols}>
             {(column) => (
               <TableColumn key={column.key}>{column.label}</TableColumn>
